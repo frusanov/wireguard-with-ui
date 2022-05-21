@@ -11,7 +11,9 @@ RUN tar -xvf wireguard-ui-v$WGUI_VERSION-linux-$PLATFORM.tar.gz \
   && rm wireguard-ui-v$WGUI_VERSION-linux-$PLATFORM.tar.gz
 
 EXPOSE 5000/tcp
-CMD ["./wireguard-ui"]
+
+COPY ./entrypoint.sh /
+ENTRYPOINT [ "/bin/bash", "/entrypoint.sh" ]
 
 
 

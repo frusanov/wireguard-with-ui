@@ -17,8 +17,8 @@ services:
       - WGUI_USERNAME=admin
       - WGUI_PASSWORD=admin
     volumes:
-      - ./config:/config
-      - ./db:/wireguard-ui/db
+      - ./config/wireguard:/config
+      - ./config/wgui:/wireguard-ui/db
       - /lib/modules:/lib/modules
     ports:
       - 51820:51820/udp
