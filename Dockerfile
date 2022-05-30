@@ -1,18 +1,24 @@
 FROM lscr.io/linuxserver/wireguard:latest
 
+ENV PLATFORM=amd64
+ENV WGUI_SERVER_POST_UP_SCRIPT="iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth+ -j MASQUERADE"
+ENV WGUI_SERVER_POST_DOWN_SCRIPT="iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth+ -j MASQUERADE"
+
 WORKDIR /wireguard-ui
 
-ENV PLATFORM=amd64
-ENV WGUI_VERSION=0.3.7
+RUN apt-get update && \
+    apt install -y --no-install-recommends \
+      inotify-tools
 
-RUN curl -LJO https://github.com/ngoduykhanh/wireguard-ui/releases/download/v$WGUI_VERSION/wireguard-ui-v$WGUI_VERSION-linux-$PLATFORM.tar.gz
+COPY ./utils/* /utils/
+COPY ./entrypoint.sh /
 
-RUN tar -xvf wireguard-ui-v$WGUI_VERSION-linux-$PLATFORM.tar.gz \
-  && rm wireguard-ui-v$WGUI_VERSION-linux-$PLATFORM.tar.gz
+RUN chmod +x /utils/watch-changes.sh && \
+    chmod +x /utils/install-wgui.sh && \
+    /utils/install-wgui.sh
 
 EXPOSE 5000/tcp
 
-COPY ./entrypoint.sh /
 ENTRYPOINT [ "/bin/bash", "/entrypoint.sh" ]
 
 

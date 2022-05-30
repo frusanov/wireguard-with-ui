@@ -2,6 +2,20 @@
 
 Image based on [linuxserver/docker-wireguard](https://github.com/linuxserver/docker-wireguard). Look at their documentation at first.
 
+## How to use
+
+Create container with Docker Compose example below. After container creation you need **add manually** `Post Up Script` and `Post Down Script` in server settings in Wireguard UI.
+
+### Post Up Script
+```bash
+iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth+ -j MASQUERADE
+```
+
+### Post Down Script
+```bash
+iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth+ -j MASQUERADE
+```
+
 ### Docker compose example
 
 ```yaml
